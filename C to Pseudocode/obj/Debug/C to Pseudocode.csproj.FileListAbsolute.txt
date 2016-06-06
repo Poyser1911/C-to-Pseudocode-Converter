@@ -1,0 +1,18 @@
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\bin\Debug\C to Pseudocode.exe.config
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\bin\Debug\C to Pseudocode.exe
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\bin\Debug\C to Pseudocode.pdb
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\bin\Debug\MahApps.Metro.dll
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\bin\Debug\System.Windows.Interactivity.dll
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\bin\Debug\MahApps.Metro.pdb
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\bin\Debug\MahApps.Metro.xml
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\obj\Debug\C to Pseudocode.csprojResolveAssemblyReference.cache
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\obj\Debug\MainWindow.baml
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\obj\Debug\App.baml
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\obj\Debug\MainWindow.g.cs
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\obj\Debug\App.g.cs
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\obj\Debug\C to Pseudocode_MarkupCompile.cache
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\obj\Debug\C to Pseudocode.g.resources
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\obj\Debug\C_to_Pseudocode.Properties.Resources.resources
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\obj\Debug\C to Pseudocode.csproj.GenerateResource.Cache
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\obj\Debug\C to Pseudocode.exe
+c:\users\poyser\documents\visual studio 2012\Projects\C to Pseudocode\C to Pseudocode\obj\Debug\C to Pseudocode.pdb
