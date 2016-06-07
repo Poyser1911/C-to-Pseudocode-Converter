@@ -3,11 +3,9 @@
 
 int main()
 {
-while(1)
-{
    printf("Hello World\n");
-getch();
-}
+   getch();
+
    return 0;
 }
 
