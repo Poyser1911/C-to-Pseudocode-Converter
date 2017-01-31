@@ -1,0 +1,8 @@
+﻿<Window x:Class="C_to_Pseudocode.CustomTypes"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="CustomTypes" Height="401.493" Width="738.806">
+    <Grid>
+        
+    </Grid>
+</Window>

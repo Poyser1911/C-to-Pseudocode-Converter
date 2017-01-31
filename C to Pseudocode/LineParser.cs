@@ -6,25 +6,35 @@ using System.Threading.Tasks;
 
 namespace C_to_Pseudocode
 {
-    public static class LineParser
+    public class ProgressChangedEventArgs : EventArgs
     {
-        public static string Parse(string code, string type)
+        public double percent{get;set;}
+    }
+    public class LineParser
+    {
+        FilterOptions options = new FilterOptions();
+
+        public delegate void OnProgressChanged(ProgressChangedEventArgs e);
+        public event OnProgressChanged ProgressChanged;
+        public string Parse(string code, string type, FilterOptions _fo)
         {
+            options = _fo;
             if (type == "Function")
                 return ParseFunction(code);
             else
                 return "Error: Unable to Parse Code as type: " + type;
         }
         # region Function Helper
-        public static bool IsFunctionHeadder(string lineofcode)
+        public bool IsFunctionHeadder(string lineofcode)
         {
             if (lineofcode.Contains(";"))
                 return false;
             if (HasDatatype(lineofcode))
                 return true;
+
             return false;
         }
-        public static bool HasDatatype(string lineofcode)
+        public bool HasDatatype(string lineofcode)
         {
             string type = GetFunctionReturnType(lineofcode);
             switch (type)
@@ -49,18 +59,18 @@ namespace C_to_Pseudocode
                     return false;
             }
         }
-        public static string GetFunctionName(string lineofcode)
+        public string GetFunctionName(string lineofcode)
         {
             if (lineofcode.Split(' ')[0].Trim().Contains("struct"))
                 return lineofcode.Split(' ')[2].Split('(')[0];
 
             return lineofcode.Split(' ')[1].Split('(')[0];
         }
-        public static string GetFunctionReturnType(string lineofcode)
+        public string GetFunctionReturnType(string lineofcode)
         {
             return lineofcode.Split(' ')[0];
         }
-        public static string DataTypeToPseudocode(string type)
+        public string DataTypeToPseudocode(string type)
         {
             switch (type)
             {
@@ -97,7 +107,7 @@ namespace C_to_Pseudocode
                 default: return "unknown type(" + type + ")";
             }
         }
-        public static string GetFunctionArgs(string lineofcode)
+        public string GetFunctionArgs(string lineofcode)
         {
             string format = "";
             string[] temp;
@@ -115,7 +125,7 @@ namespace C_to_Pseudocode
 
             return format;
         }
-        public static string ParseFunctionheadder(string lineofcode)
+        public string ParseFunctionheadder(string lineofcode)
         {
             string function_name = GetFunctionName(lineofcode);
             string args = "(" + GetFunctionArgs(lineofcode) + ")";
@@ -125,13 +135,13 @@ namespace C_to_Pseudocode
         #endregion
 
         #region Declaration Helper
-        public static bool isDeclearation(string lineofcode)
+        public bool isDeclearation(string lineofcode)
         {
             if (HasDatatype(lineofcode) && lineofcode.Contains(";") && !lineofcode.Contains("("))
                 return true;
             return false;
         }
-        public static string ParseDeclearation(string lineofcode)
+        public string ParseDeclearation(string lineofcode)
         {
             string datatype = GetFunctionReturnType(lineofcode);
             string variable_names = lineofcode.Replace(datatype, "").Trim().Replace(";", "");
@@ -141,7 +151,7 @@ namespace C_to_Pseudocode
         #endregion
 
         #region Print Statement Helper
-        public static bool IsPrintStatement(string lineofcode)
+        public bool IsPrintStatement(string lineofcode)
         {
             string function_name;
             if (lineofcode.Contains("printf(") || lineofcode.Contains("print("))
@@ -152,7 +162,7 @@ namespace C_to_Pseudocode
             }
             return false;
         }
-        public static string ParsePrintStatement(string lineofcode)
+        public string ParsePrintStatement(string lineofcode)
         {
             string stringtoprint = lineofcode.Split('"')[1].Split('"')[0];
             lineofcode = lineofcode.Replace(");", "");
@@ -207,7 +217,7 @@ namespace C_to_Pseudocode
                 return "\tPRINT \"" + RemoveColours(RemoveEscapeSequences(stringtoprint)) + "\"\n";
 
         }
-        public static string RemoveEscapeSequences(string lineofcode)
+        public string RemoveEscapeSequences(string lineofcode)
         {
             string[] specialchar = { "\\n", "\\t", "\\r" };
 
@@ -216,33 +226,34 @@ namespace C_to_Pseudocode
 
             return lineofcode;
         }
-        public static string RemoveColours(string lineofcode)
+        public string RemoveColours(string lineofcode)
         {
-            for (int i = 1; i < 10; i++)
-                lineofcode = lineofcode.Replace("^" + i, "");
+            if (options.RemoveColours)
+                for (int i = 1; i < 10; i++)
+                    lineofcode = lineofcode.Replace("^" + i, "");
 
             return lineofcode;
         }
         #endregion
 
         #region Comment Helper
-        public static bool IsComment(string lineofcode)
+        public bool IsComment(string lineofcode)
         {
-            if (lineofcode.Length >= 2)
-                if (lineofcode.Substring(0, 2) == "//")
-                    return true;
+                if (lineofcode.Length >= 2)
+                    if (lineofcode.Substring(0, 2) == "//")
+                        return true;
             return false;
         }
         #endregion
 
         #region InputStatement Helper
-        public static bool IsInputStatement(string lineofcode)
+        public bool IsInputStatement(string lineofcode)
         {
             if (lineofcode.Contains("scanf(") && !lineofcode.Contains("fscanf("))
                 return true;
             return false;
         }
-        public static string ParseInputStatement(string lineofcode)
+        public string ParseInputStatement(string lineofcode)
         {
             string format = "";
             lineofcode = lineofcode.Replace(");", "");
@@ -259,13 +270,13 @@ namespace C_to_Pseudocode
         #endregion
 
         #region ForStatement Helper
-        public static bool IsForStatement(string lineofcode)
+        public bool IsForStatement(string lineofcode)
         {
-            if (lineofcode.Replace(" ","").Contains("for("))
+            if (lineofcode.Replace(" ", "").Contains("for("))
                 return true;
             return false;
         }
-        public static string RemoveComparsionSymbols(string s)
+        public string RemoveComparsionSymbols(string s)
         {
             string format = "";
             string filterout = "<>=!";
@@ -275,7 +286,7 @@ namespace C_to_Pseudocode
 
             return format.Trim();
         }
-        public static string ParseForStatement(string lineofcode)
+        public string ParseForStatement(string lineofcode)
         {
             string format = "";
             string[] parts = lineofcode.Split('(')[1].Split(')')[0].Split(';');
@@ -300,7 +311,7 @@ namespace C_to_Pseudocode
         #endregion
 
         #region SkipIndenting
-        public static bool IsDontIndent(string lineofcode)
+        public bool IsDontIndent(string lineofcode)
         {
 
             if (lineofcode.Contains("{") || lineofcode.Contains("}") || lineofcode.Contains("<") && lineofcode.Contains(">") || lineofcode.Contains("#"))
@@ -310,7 +321,7 @@ namespace C_to_Pseudocode
         #endregion
 
         #region Excp
-        public static bool LineContainsFunctionCall(string lineofcode)
+        public bool LineContainsFunctionCall(string lineofcode)
         {
             if (lineofcode.Contains("(") && lineofcode.Contains(")"))
                 return true;
@@ -318,32 +329,32 @@ namespace C_to_Pseudocode
             return false;
         }
 
-        public static bool IsInclude(string lineofcode)
+        public bool IsInclude(string lineofcode)
         {
             if (lineofcode.Contains("#include"))
                 return true;
             return false;
         }
 
-        public static bool IsNotCall(string lineofcode)
+        public bool IsNotCall(string lineofcode)
         {
             if (lineofcode.Contains("if(") || lineofcode.Contains("while(") || lineofcode.Contains("switch(") || lineofcode.Contains("case"))
                 return true;
             return false;
         }
 
-        public static string ParseFunctionCall(string lineofcode)
+        public string ParseFunctionCall(string lineofcode)
         {
-            if(lineofcode.Contains("="))
-                return "\t"+lineofcode.Replace(lineofcode.Split('=')[1], "call " + lineofcode.Split('=')[1])+"\n";
+                if (lineofcode.Contains("="))
+                    return "\t" + lineofcode.Replace(lineofcode.Split('=')[1], "call " + lineofcode.Split('=')[1]) + "\n";
 
-            return "\tcall "+lineofcode;
+                return "\tcall " + lineofcode;
         }
 
         #endregion
 
         #region SwitchStatementHelper
-        public static bool IsSwitchStatement(string lineofcode)
+        public bool IsSwitchStatement(string lineofcode)
         {
             if (lineofcode.Contains("switch"))
                 return true;
@@ -352,14 +363,14 @@ namespace C_to_Pseudocode
             return false;
         }
 
-        public static string ParseSwitchStatement(string lineofcode)
+        public string ParseSwitchStatement(string lineofcode)
         {
             string arg = lineofcode.Split('(')[1].Split(')')[0];
 
             return "Do Case " + arg + "";
         }
 
-        public static bool IsCaseSatemnt(string lingofcode)
+        public bool IsCaseSatemnt(string lingofcode)
         {
             lingofcode = lingofcode.Trim();
             if (lingofcode.Split(':')[0].Contains("case"))
@@ -367,36 +378,36 @@ namespace C_to_Pseudocode
 
             return false;
         }
-        public static string ParseCaseStatement(string lineofcode) //god
+        public string ParseCaseStatement(string lineofcode) //god
         {
             string key = "";
             string statement = lineofcode.Split(':')[1];
 
-            if(lineofcode.Split(':')[0].Contains("\'"))
-            key  = lineofcode.Split('\'')[1].Split('\'')[0];
-            else 
-                key = lineofcode.Split(':')[0].Trim().Substring(0,lineofcode.Split(':')[0].Trim().Length -1);
+            if (lineofcode.Split(':')[0].Contains("\'"))
+                key = lineofcode.Split('\'')[1].Split('\'')[0];
+            else
+                key = lineofcode.Split(':')[0].Trim().Substring(0, lineofcode.Split(':')[0].Trim().Length - 1);
 
-            return "\t    Case " + key + ":" + statement+"\n";
+            return "\t    Case " + key + ":" + statement + "\n";
         }
 
-        public static bool IsCaseOther(string lineofcode)
+        public bool IsCaseOther(string lineofcode)
         {
             if (lineofcode.Contains("default: "))
                 return true;
             return false;
         }
-        public static string ParseCaseOther(string lineofcode)
+        public string ParseCaseOther(string lineofcode)
         {
             string statement = lineofcode.Split(':')[1];
 
-            return "\tCase other: " + statement+"\n";
+            return "\tCase other: " + statement + "\n";
         }
         #endregion
 
 
         #region Handle Parse
-        public static string ParseFunction(string codeblock)
+        public string ParseFunction(string codeblock)
         {
             int i = 0;
             bool wasaprint = false;
@@ -415,13 +426,16 @@ namespace C_to_Pseudocode
                 else if (HasDatatype(temp) && temp.Contains(";") && temp.Contains("(") && temp.Contains("(") && temp.Contains("="))
                     codeblocks[i] = ParseDeclearation(temp);
                 else if (HasDatatype(temp) && temp.Contains(";") && temp.Contains("("))
-                    codeblocks[i] = "";
+                    if (!options.RemoveFuncPrototype)
+                        codeblocks[i] = "";
+                    else
+                        codeblocks[i] = "Function Declaration ->" + codeblocks[i];
                 else if (IsPrintStatement(temp))
                 {
                     codeblocks[i] = ParsePrintStatement(RemoveEscapeSequences(temp));
                     wasaprint = true;
                 }
-                else if (IsComment(temp))
+                else if (IsComment(temp) && options.RemoveComments)
                     codeblocks[i] = "";
                 else if (IsInputStatement(temp))
                     codeblocks[i] = ParseInputStatement(temp);
@@ -431,7 +445,7 @@ namespace C_to_Pseudocode
                     if (!codeblocks[i + 1].Contains("{"))
                         codeblocks[i] = codeblocks[i] + "\n";
                 }
-                else if (!IsDontIndent(temp))
+                else if (!IsDontIndent(temp) && options.EnableAutoIndent)
                 {
                     if (LineContainsFunctionCall(temp) && !IsNotCall(temp))
                     {
@@ -445,7 +459,7 @@ namespace C_to_Pseudocode
                         codeblocks[i] = "\t" + temp + "\n";
                 }
 
-                if (IsInclude(temp))
+                if (IsInclude(temp) && options.RemoveIncludes)
                 {
                     codeblocks[i] = "";
                     i++;
@@ -463,17 +477,17 @@ namespace C_to_Pseudocode
                     codeblocks[i] = ParseCaseOther(temp);
                 if (temp.Contains("if("))
                 {
-                   // codeblocks[i] = codeblocks[i] + "\n";
+                    // codeblocks[i] = codeblocks[i] + "\n";
                     wasaprint = true;
                 }
-                if (!wasaprint)
+                if (!wasaprint && options.UseArrowEqual)
                     codeblocks[i] = codeblocks[i].Replace("=", "←");
                 wasaprint = false;
                 if (!codeblocks[i].Contains('\n') && codeblocks[i] != "" && !codeblocks[i].Contains("{") && !codeblocks[i].Contains("FOR") && IsNotCall(codeblocks[i]) && !codeblocks[i + 1].Contains("{"))
                     codeblocks[i] = codeblocks[i] + "\n";
 
                 if (codeblocks[i].Contains("++"))
-                    codeblocks[i] = "\t"+codeblocks[i].Split('+')[0].Trim() +" = " + codeblocks[i].Split('+')[0].Trim() + "+ 1";
+                    codeblocks[i] = "\t" + codeblocks[i].Split('+')[0].Trim() + " = " + codeblocks[i].Split('+')[0].Trim() + "+ 1";
 
                 if (codeblocks[i].Contains("else"))
                 {
@@ -481,18 +495,19 @@ namespace C_to_Pseudocode
                     if (codeblocks[i + 1].Trim().Contains("{"))
                         codeblocks[i + 1] = "";
                 }
-                if(codeblocks[i].Contains("=="))
-                   codeblocks[i] = codeblocks[i].Replace("==", "=");
+                if (codeblocks[i].Contains("=="))
+                    codeblocks[i] = codeblocks[i].Replace("==", "=");
 
-                if (codeblocks[i].Contains("//"))
+                if (codeblocks[i].Contains("//") && !LineContainsFunctionCall(codeblocks[i]))
                 {
                     int startindex = codeblocks[i].IndexOf("//");
                     int lastindex = codeblocks[i].IndexOf('\n');
                     codeblocks[i] = codeblocks[i].Remove(startindex, lastindex - startindex);
                 }
+                ProgressChanged(new ProgressChangedEventArgs{percent = (i*100)/codeblocks.Length});
                 i++;
-              //  if (i > codeblocks.Length-1)
-                  //  break;
+                //  if (i > codeblocks.Length-1)
+                //  break;
             }
             foreach (string line in codeblocks)
                 format += line;
