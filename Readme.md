@@ -11,4 +11,4 @@
 
 
 Preview Image -
-![Alt text](/C to Pseudocode/preview.png?raw=true "Preview")
+![Alt text](http://poyser.pw/projects/project_data/8/screenshots/screenshot_59724342f1839.png "Preview")
